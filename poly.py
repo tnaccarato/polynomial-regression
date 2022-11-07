@@ -32,6 +32,47 @@ YY = lin_reg.intercept_[0] + lin_reg.coef_[0][0]*train_x
 # Plots the graph
 plt.plot(XX, YY, c='b', label="Linear Regression")
 
+# Divides data into test and training (2)
+df = np.random.rand(len(UK_df)) < .8
+train = UK_df[df]
+test = UK_df[~df]
+
+# Identify the dependent(y) and independent variables(x) in the train and test
+# dataframes
+train_x = np.asanyarray(train[['ratio']])
+train_y = np.asanyarray(train[['New_deaths']])
+test_x = np.asanyarray(train[['ratio']])
+test_y = np.asanyarray(train[['New_deaths']])
+
+# Generate polynomial and interaction features Object with 6 degrees
+poly = PolynomialFeatures(degree=6)
+
+# Makes a number of variables with different degrees from
+# independent variables(x) to use them in a model
+train_x_poly = poly.fit_transform(train_x)
+
+# Make the model
+lin_reg = LinearRegression()
+train_y_ = lin_reg.fit(train_x_poly, train_y)
+
+# Constructs a scatterplot using train data in yellow
+plt.scatter(train.ratio, train.New_deaths,  color='y', label='Training data')
+# Set the X axis using numpy:   np.arange(start, end, interval) (3)
+XX = np.arange(train_x[0], train_x[-1], 0.1)
+# Set the Y axis using intercept and coefficients
+YY = lin_reg.intercept_[0]
+for d in range(1, 7):
+    YY += lin_reg.coef_[0][d]*np.power(XX, d)
+
+# Plots regression model
+plt.plot(XX, YY, 'r', label='Polynomial (6) Regression')
+plt.title('COVID-19 Deaths Regressed on Vaccination Rate (%) in the United Kingdom')
+plt.xlabel("Vaccination rate (%) ")
+plt.ylabel("New deaths")
+plt.grid(True)
+plt.legend()
+plt.show()
+
 
 
 '''
